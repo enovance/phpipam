@@ -41,35 +41,33 @@ $size =sizeof($sections);
 		
 		<!-- headers -->
 		<tr>
-			<th><?php print _("Order"); ?></th>
 			<th><?php print _("Name"); ?></th>
 			<th><?php print _("Description"); ?></th>
+			<th><?php print _(""); ?></th>
 		</tr>
-	
+		
+		<tbody id="sectionRows">
 		<?php
 		// print sections
+		$orderIndex = 1;
 		foreach($sections as $s) {
 			print "<tr>";
-			
-			//order
-			print "	<td>";
-			print "	<select name='order-$s[id]' class='input-small'>";
-			for($m=0; $m<=$size;$m++) {
-				if($m==0) { $print = _("Not set"); }
-				else	  { $print = $m; }
-				if($m==$s['order'])	{ print "<option value='$m' selected='selected'>$print</option>"; }
-				else				{ print "<option value='$m'>$print</option>"; }
-			}
-			print "	</select>";
-			print "	</td>";
 			
 			print "	<td>$s[name]</td>";
 			print "	<td>$s[description]</td>";
 			
+			//order
+			print "	<td>";
+			print "	<input type='hidden' name='order-$s[id]' value=$orderIndex />";
+			print " <i class='icon-move icon-gray'></i>";
+			print "	</td>";
+			
 			print "</tr>";
+			
+			$orderIndex++;
 		}
 		?>
-
+		</tbody>
 		
 		</table>	<!-- end table -->
 	</form>		<!-- end form -->

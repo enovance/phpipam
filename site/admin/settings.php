@@ -298,6 +298,31 @@ $langs = getLanguages ();
 	</td>
 </tr>
 
+<!-- Section ordering -->
+<tr>
+	<td class="title"><?php print _('Section ordering'); ?></td>
+	<td>
+		<select name="subnetOrdering" style="width:auto;">
+			<?php
+			$opts = array(
+				"name,asc"		=> _("Name, ascending"),
+				"name,desc"		=> _("Name, descending"),
+				"manual"		=> _("Manual"),
+			);
+			
+			foreach($opts as $key=>$line) {
+				if($settings['subnetOrdering'] == $key) { print "<option value='$key' selected>$line</option>"; }
+				else 									{ print "<option value='$key'>$line</option>"; }
+			}
+			
+			?>
+		</select>
+	</td>
+	<td class="info">
+		<?php print _('How to order display of sections'); ?>
+	</td>
+</tr>
+
 <!-- Subnet ordering -->
 <tr>
 	<td class="title"><?php print _('Subnet ordering'); ?></td>
@@ -309,6 +334,7 @@ $langs = getLanguages ();
 				"subnet,desc"		=> _("Subnet, descending"),
 				"description,asc"	=> _("Description, ascending"),
 				"description,desc"	=> _("Description, descending"),
+				"manual"		=> _("Manual"),
 			);
 			
 			foreach($opts as $key=>$line) {

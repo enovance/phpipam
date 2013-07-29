@@ -1116,7 +1116,9 @@ table#manageSection td {
 	padding-right: 40px;
 	vertical-align: top;
 }
-
+table tbody.ui-sortable {
+	cursor: move;
+}
 table#logs span {
 	border: 1px solid #ccc;
 	padding: 2px 5px;

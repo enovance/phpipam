@@ -917,6 +917,13 @@ $('button.sectionOrder').click(function() {
     //load edit data
     $.post("site/admin/manageSectionOrder.php", function(data) {
         $('div.popup_w500').html(data);
+	$('tbody#sectionRows').sortable({
+		stop: function(){
+			$('input[type="hidden"]').each(function(index) {
+				$(this).val(index + 1);
+			});
+		}
+	});
         showPopup('popup_w500');
         hideSpinner();
     }).fail(function(xhr, textStatus, errorThrown) { showError(xhr.statusText);});
