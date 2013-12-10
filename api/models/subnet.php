@@ -94,9 +94,9 @@ class Subnet
 		if(!isset($this->mask) || !is_numeric($this->mask)) 					{ throw new Exception('Invalid mask'); }					//mandatory parameters
 		if(!is_numeric($this->vrfId))											{ throw new Exception('Invalid VRF Id'); }
 		if(!is_numeric($this->vlanId))											{ throw new Exception('Invalid VRF Id'); }
-		if($this->allowRequests != 0 || $this->allowRequests !=1)				{ throw new Exception('Invalid allow requests value'); }
-		if($this->showName != 0 || $this->showName !=1)							{ throw new Exception('Invalid show Name value'); }
-		if($this->pingSubnet != 0 || $this->pingSubnet !=1)						{ throw new Exception('Invalid ping subnet value'); }
+		if(!($this->allowRequests == 0 || $this->allowRequests == 1))				{ throw new Exception('Invalid allow requests value'); }
+		if(!($this->showName == 0 || $this->showName == 1))							{ throw new Exception('Invalid show Name value'); }
+		if(!($this->pingSubnet == 0 || $this->pingSubnet == 1))						{ throw new Exception('Invalid ping subnet value'); }
 
 
 		//output format
@@ -105,7 +105,7 @@ class Subnet
 		//create array to write new section
 		$newSubnet = $this->toArray($this, $format);
 		//create new section
-		$res = UpdateSection2 ($newSection, true);								//true means from API	
+		$res = UpdateSection($newSection, true);								//true means from API	
 		//return result (true/false)
 		if(!$res) 																{ throw new Exception('Invalid query'); } 
 		else {
