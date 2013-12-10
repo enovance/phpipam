@@ -105,7 +105,7 @@ class Subnet
 		//create array to write new section
 		$newSubnet = $this->toArray($this, $format);
 		//create new section
-		$res = UpdateSection2 ($newSection, true);								//true means from API	
+		$res = UpdateSection($newSection, true);								//true means from API	
 		//return result (true/false)
 		if(!$res) 																{ throw new Exception('Invalid query'); } 
 		else {
