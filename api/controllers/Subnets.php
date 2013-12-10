@@ -43,10 +43,10 @@ class Subnets
 		$subnet->description	  	= $this->_params['description'];
 		$subnet->vrfId			  	= $this->_params['vrfId'];
 		$subnet->vlanId			  	= $this->_params['vlanId'];
-		$subnet->allowRequests		= $this->_params['allowRequests'];
-		$subnet->showName			= $this->_params['showName'];
+		$subnet->allowRequests		= intval($this->_params['allowRequests']);
+		$subnet->showName			= intval($this->_params['showName']);
 		$subnet->permissions		= $this->_params['permissions'];
-		$subnet->pingSubnet			= $this->_params['pingSubnet'];
+		$subnet->pingSubnet			= intval($this->_params['pingSubnet']);
 
 		//create section
 		$res = $subnet->createSubnet(); 	
