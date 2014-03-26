@@ -16,10 +16,10 @@ require_once('../../functions/functions-install.php');
 if( !empty($_POST['ipamusername']) && !empty($_POST['ipampassword']) )  {
 	$ipamusername = $_POST['ipamusername'];
 	$ipampassword['raw'] = $_POST['ipampassword'];
-	$ipampassword['md5'] = md5($_POST['ipampassword']);
+	#$ipampassword['md5'] = md5($_POST['ipampassword']);
 
 	/* check local login */
-	checkLogin ($ipamusername, $ipampassword['md5'], $ipampassword['raw']);
+	checkLogin ($ipamusername, md5($_POST['ipampassword']), $ipampassword['raw']);
 }
 //Username / pass not provided
 else {
