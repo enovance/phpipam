@@ -929,7 +929,140 @@ function updateSubnetPermissions ($subnet)
 
 
 
+/* @address functions ---------------- */
 
+
+/**
+ * Update address
+ */
+function UpdateAddress ($update, $api = false) 
+{
+    global $db;                                                                     # get variables from config file
+    $database = new database($db['host'], $db['user'], $db['pass'], $db['name']);	# open db connection  
+    
+     # replace special chars for permissions
+    $update['permissions'] = mysqli_real_escape_string($database, $update['permissions']);   
+    $update['description'] = mysqli_real_escape_string($database, $update['description']); 
+    
+    if (!$api && !$update['description']) 	{ die('<div class="alert alert-danger">'._('Description is mandatory').'!</div>'); }	# section name is mandatory
+
+	
+    $log = prepareLogFromArray ($update);											# prepare log
+
+    if( ( $update['action'] == 'create') || ( $update['action'] == 'add') ){
+      $query = setSelectAddressQuery ($update);
+      try { 
+        $result = $database->getRow($query, true); 
+        if(isset($result[0])){
+          $update['id'] = $result[0];
+          $update['action'] = 'edit';
+        }
+      }
+      catch (Exception $e) {
+        $error =  $e->getMessage(); 
+        updateLogTable ('Query failed ('. $query. ') - '.$error, $log, 2);	# write error log
+      }
+    }
+
+    $query = setUpdateAddressQuery ($update);										# set update section query
+
+	/* save old if delete */
+    if($update['action']=="delete")		{ $dold = getAddressDetailsById ($update['id']); }
+    elseif($update['action']=="edit")	{ $old  = getAddressDetailsById ($update['id']); }
+
+
+    # delete and edit requires multiquery
+    if ( ( $update['action'] == "delete") || ( $update['action'] == "edit") )
+    {
+		# execute
+		try { $result = $database->executeMultipleQuerries($query, true); }
+		catch (Exception $e) { 
+    		$error =  $e->getMessage(); 
+            updateLogTable ('Address ' . $update['action'] .' failed ('. $update['description']. ') - '.$error, $log, 2);	# write error log
+            if(!$api) print ('<div class="alert alert-danger">'.("Cannot $update[action] all entries").' - '.$error.'!</div>');
+			return false;
+    	}
+    	# success
+        updateLogTable ('Address '. $update['description'] . ' ' . $update['action'] .' ok', $log, 1);			# write success log
+        
+        /* for changelog */
+        if ($update['action']=="delete") {
+			$dold['id'] = $update['id'];
+			updateLogTable('section', $update['action'], 'success', $dold, array());
+		} else {
+			updateLogTable('section', $update['action'], 'success', $old, $update);
+		}
+        
+        return true;
+    }
+    # add is single querry
+    else 
+    {
+		# execute
+		try { $result = $database->executeQuery($query, true); }
+		catch (Exception $e) { 
+    		$error =  $e->getMessage(); 
+            updateLogTable ('Adding address '. $update['description'] .'failed - '.$error, $log, 2);							# write error log
+            if(!$api)  die('<div class="alert alert-danger">'.('Cannot update database').'!<br>'.$error.'</div>');  
+            return false;
+		}
+		# success
+        updateLogTable ('Address '. $update['description'] .' added succesfully', $log, 1);					# write success log
+        
+        /* for changelog */
+		$update['id'] = $result;
+		updateLogTable('section', $update['action'], 'success', array(), $update);
+        
+        return true;
+    }
+}
+
+
+
+/**
+ * Set Query for getting address if duplicate
+ */
+function setSelectAddressQuery ($update) 
+{
+    $query = "Select id from `ipaddresses` where `subnetId`='".$update['subnetId']."' and `ip_addr`='".$update['ip_addr']."';";
+    return $query;
+}
+
+/**
+ * Set Query for update address
+ */
+function setUpdateAddressQuery ($update) 
+{
+	# add address
+    if ($update['action'] == "add" || $update['action'] == "create") 
+    {
+        $query = 'Insert into ipaddresses (`description`,`subnetId`,`ip_addr`,`dns_name`,`mac`,`owner`,`state`,`switch`,`port`,`note`) values ("'.$update['description'].'", "'.$update['subnetId'].'", "'.$update['ip_addr'].'", "'.$update['dns_name'].'", "'.$update['mac'].'", "'.$update['owner'].'", "'.$update['state'].'", "'.$update['switch'].'", "'.$update['port'].'", "'.$update['note'].'");';
+    }
+    # edit address
+    else if ($update['action'] == "edit" || $update['action'] == "update") 
+    {
+        $address_old = getAddressDetailsById ( $update['id'] );												# Get old address name for update
+        # Update section
+        $query   = "update `ipaddresses` set `description` = '$update[description]', `subnetId` = '$update[subnetId]', `ip_addr` = '$update[ip_addr]', `dns_name`='".$update['dns_name']."', `mac`='$update[mac]', `owner`='".$update['owner']."', `state`='".$update['state']."', `port`='$update[port]' where `id` = '$update[id]';";	
+        
+        # delegate permissions if set
+        #if($update['delegate'] == 1) {
+	#        $query .= "update `subnets` set `permissions` = '$update[permissions]' where `sectionId` = '$update[id]';";
+        #}		
+    }
+	# delete section
+	else if( $update['action'] == "delete" ) 
+	{
+        /* we must delete many entries - address, all belonging subnets and ip addresses */
+        $addressId = $update['id'];
+        
+        # delete addresses query
+	$query  = "delete from `ipaddresses` where `id` = '$addressId';"."\n";
+    }
+    
+    /* return query */
+    return $query;
+}
 
 
 

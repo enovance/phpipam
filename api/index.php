@@ -16,6 +16,7 @@ $settings = getAllSettings();
 /* include models */
 include_once 'models/section.php';						//section actions
 include_once 'models/subnet.php';						//subnet actions
+include_once 'models/address.php';						//address actions
 
 
 /* wrap in a try-catch block to catch exceptions */
