@@ -3,8 +3,8 @@
 /* database connection details
 *******************************/
 $db['host'] = "localhost";
-$db['user'] = "phpipam";
-$db['pass'] = "phpipamadmin";
+$db['user'] = "root";
+$db['pass'] = "turtoise";
 $db['name'] = "phpipam";
 
 /* glpi database connection details
@@ -42,6 +42,6 @@ $debugging = false;
  *  Also change 
  *	RewriteBase / in .htaccess
  ******************************/
-define('BASE', "/");
+define('BASE', "/phpipam/");
 
 ?>

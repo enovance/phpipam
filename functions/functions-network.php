@@ -319,6 +319,28 @@ function getNumberOfSections ()
     return($sections[0]['count']);
 }
 
+/**
+ * Get ip details - provide address id
+ */
+function getAddressDetailsById ($id)
+{
+    global $db;                                                                      # get variables from config file
+    /* set query, open db connection and fetch results */
+    $query 	  = 'select * from ipaddresses where id = "'. $id .'";';
+    $database = new database($db['host'], $db['user'], $db['pass'], $db['name']);
+
+    /* execute */
+    try { $addresses = $database->getArray( $query ); }
+    catch (Exception $e) { 
+        $error =  $e->getMessage(); 
+        print ("<div class='alert alert-danger'>"._('Error').": $error</div>");
+        return false;
+    } 
+    $database->close();
+
+    /* return section */
+    if(sizeof($addresses) > 0)	{ return($addresses[0]); }
+}
 
 /**
  * Get section details - provide section id
